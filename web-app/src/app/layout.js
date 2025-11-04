@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
       <html lang="en" data-theme="pastel">
-        <body className="antialiased min-h-screen bg-base-100">
+        <body className="antialiased min-h-screen bg-gray-600">
           <div className="flex flex-col min-h-screen">
             {/* Navbar container with subtle shadow and border */}
             <header className="sticky top-0 z-30 bg-base-100/95 backdrop-blur-sm border-b border-base-200">
@@ -36,8 +36,8 @@ export default function RootLayout({ children }) {
                   {/* Navigation buttons - only shown when signed in */}
                   <div className="hidden md:flex items-center gap-4">
                     <SignedIn>
-                      <Link href="/recruiting" className="btn btn-ghost">Recruiting</Link>
-                      <Link href="/scheduling" className="btn btn-ghost border-b-fuchsia-500">Scheduling</Link>
+                      <Link href="/recruiting" className="btn btn-ghost rounded-3xl border-purple-700">Recruiting</Link>
+                      <Link href="/scheduling" className="btn btn-ghost rounded-3xl border-purple-700">Scheduling</Link>
                     </SignedIn>
                   </div>
 
