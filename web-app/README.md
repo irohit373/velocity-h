@@ -17,13 +17,7 @@ pnpm install
 For running the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 I added daisyUI in the dependencies, so don't worry to add it and added the Daisy MCP server yeah help karega github copilot ko code likhne mein aur daisy ui ke components ko samajhne mein. taki tum chat mein daisy ui se acche se code mangwa sako (maybe complicated for you, if smj na aayein toh contact kareh) . Below is the link to daisy ui documentation and editor.
