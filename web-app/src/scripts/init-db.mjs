@@ -1,4 +1,4 @@
-import { initDatabase } from '../lib/db/index.js';
+import { initDatabase } from '../lib/db.js';
 
 initDatabase()
     .then(() => {

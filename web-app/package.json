@@ -10,7 +10,9 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
     "env": "^0.0.2",
+    "jsonwebtoken": "^9.0.2",
     "lottie-react": "^2.4.1",
     "next": "15.5.4",
     "react": "19.1.0",
