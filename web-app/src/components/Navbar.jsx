@@ -3,12 +3,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import UserDropdown from './UserDropdown'
+import { useUser } from "@/providers/UserProvider";
+import UserDropdown from "./UserDropdown";
 
 export default function Navbar() {
-// Mobile Toogle menu variable 
+  // Get user from Context Provider (no prop needed!)
+  const user = useUser();
+  
+  // Mobile Toogle menu variable 
   // State to track mobile menu open/close
   const [isOpen, setIsOpen] = useState(false);
+  
   // Toggle mobile menu state
   const toggleMenu = () => setIsOpen(!isOpen);
   // Close mobile menu
@@ -40,18 +45,28 @@ export default function Navbar() {
             >
               Job List
             </Link>
-            <Link
-              href="/signup"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium transition-colors"
-            >
-              Sign Up
-            </Link>
-            <Link
-              href="/signin"
-              className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition-colors"
-            >
-              Login
-            </Link>
+            
+            {/* Conditional Rendering: Show based on auth status */}
+            {user ? (
+              // If logged in: Show User Dropdown
+              <UserDropdown user={user} />
+            ) : (
+              // If not logged in: Show Sign Up & Login
+              <>
+                <Link
+                  href="/signup"
+                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium transition-colors"
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  href="/signin"
+                  className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition-colors"
+                >
+                  Login
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile: Hamburger Menu Button */}
@@ -98,20 +113,60 @@ export default function Navbar() {
             >
               Job List
             </Link>
-            <Link
-              href="/signup"
-              className="text-gray-700 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium"
-              onClick={closeMenu}
-            >
-              Sign Up
-            </Link>
-            <Link
-              href="/signin"
-              className="bg-blue-600 text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium text-center"
-              onClick={closeMenu}
-            >
-              Login
-            </Link>
+
+            {/* Mobile: Conditional Rendering */}
+            {user ? (
+              // If logged in: Show user info and logout
+              <>
+                <div className="border-t border-gray-200 pt-2 mt-2">
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-semibold text-gray-900">{user.name || 'User'}</p>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                  </div>
+                  <Link
+                    href="/dashboard/recruiter"
+                    className="text-gray-700 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium"
+                    onClick={closeMenu}
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/dashboard/scheduling"
+                    className="text-gray-700 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium"
+                    onClick={closeMenu}
+                  >
+                    Scheduling
+                  </Link>
+                  <button
+                    onClick={async () => {
+                      await fetch('/api/auth/logout', { method: 'POST' });
+                      window.location.href = '/signin';
+                    }}
+                    className="w-full text-left text-red-600 hover:bg-red-50 block px-3 py-2 rounded-md text-base font-medium"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </>
+            ) : (
+              // If not logged in: Show Sign Up & Login
+              <>
+                <Link
+                  href="/signup"
+                  className="text-gray-700 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium"
+                  onClick={closeMenu}
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  href="/signin"
+                  className="bg-blue-600 text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium text-center"
+                  onClick={closeMenu}
+                >
+                  Login
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

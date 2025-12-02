@@ -4,7 +4,6 @@
 // Import required dependencies
 import Link from "next/link"; // Next.js Link for navigation
 import dynamic from "next/dynamic"; // Dynamic import to load components on client-side only
-import Navbar from "@/components/Navbar"; // Import Navbar
 import animationData from "../../public/lottie_animation/animation-02/watermelon-pack-animation-02.json"; // Lottie animation JSON
 
 // Load Lottie component only on client-side (not during server-side rendering)
@@ -13,8 +12,7 @@ const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 export default function Home() {
   return (
     <>
-      {/* Navbar for homepage */}
-      <Navbar />
+      {/* Navbar is now in layout.jsx, no need to import here */}
       
       {/* Main container with gradient background */}
       <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-blue-50 to-pink-50">
