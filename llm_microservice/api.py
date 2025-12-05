@@ -14,16 +14,21 @@ load_dotenv()
 
 app = FastAPI(title="Velocity-H Backend API")
 
+# Get allowed origins from environment variable or use defaults
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,https://velocity-h.vercel.app")
+allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+
+# Add Vercel preview URLs support
+allowed_origins.append("https://*.vercel.app")
+
 # CORS Configuration for Next.js
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://velocity-h.vercel.app"
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Models
