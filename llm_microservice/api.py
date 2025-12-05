@@ -17,7 +17,10 @@ app = FastAPI(title="Velocity-H Backend API")
 # CORS Configuration for Next.js
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Add your Next.js URLs
+    allow_origins=[
+        "http://localhost:3000",
+        "https://velocity-h.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
