@@ -1,5 +1,7 @@
-const FASTAPI_URL = (process.env.FASTAPI_URL || 'http://localhost:8000');
+const FASTAPI_URL = (process.env.FASTAPI_URL || 'http://localhost:8000').replace(/\/+$/, '');
 const FASTAPI_TIMEOUT = 120000; // 120 seconds
+
+console.log('[FastAPI Config] FASTAPI_URL:', FASTAPI_URL);
 
 /**
  * Make a request to FastAPI with timeout and error handling
@@ -98,8 +100,16 @@ export async function generateJobSummary(jobData) {
  */
 export async function analyzeResume(data) {
   try {
+    const url = `${FASTAPI_URL}/api/analyze-resume`;
+    console.log('[analyzeResume] Calling:', url);
+    console.log('[analyzeResume] Data:', {
+      resume_url: data.resume_url,
+      has_job_description: !!data.job_description,
+      has_cover_letter: !!data.cover_letter
+    });
+    
     const response = await fetchWithTimeout(
-      `${FASTAPI_URL}/api/analyze-resume`,
+      url,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -120,6 +130,7 @@ export async function analyzeResume(data) {
         errorDetail = `${response.status} ${response.statusText}`;
       }
       console.error('FastAPI Error Details:', errorDetail);
+      console.error('Request URL:', url);
       throw new Error(errorDetail);
     }
 
