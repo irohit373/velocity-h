@@ -1,38 +1,6 @@
 const FASTAPI_URL = (process.env.FASTAPI_URL || 'http://localhost:8000').replace(/\/+$/, '');
-const FASTAPI_TIMEOUT = 120000; // 120 seconds
 
 console.log('[FastAPI Config] FASTAPI_URL:', FASTAPI_URL);
-
-/**
- * Make a request to FastAPI with timeout and error handling
- * @param {string} url - The URL to fetch
- * @param {RequestInit} options - Fetch options
- * @param {number} timeout - Timeout in milliseconds
- * @returns {Promise<Response>} The fetch response
- */
-async function fetchWithTimeout(
-  url,
-  options,
-  timeout = FASTAPI_TIMEOUT
-) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-  
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
-      throw new Error('Request timeout - AI service is taking too long');
-    }
-    throw error;
-  }
-}
 
 /**
  * Generate AI job summary
@@ -45,7 +13,7 @@ async function fetchWithTimeout(
  */
 export async function generateJobSummary(jobData) {
   try {
-    const response = await fetchWithTimeout(
+    const response = await fetch(
       `${FASTAPI_URL}/api/generate-job-summary`,
       {
         method: 'POST',
@@ -108,7 +76,7 @@ export async function analyzeResume(data) {
       has_cover_letter: !!data.cover_letter
     });
     
-    const response = await fetchWithTimeout(
+    const response = await fetch(
       url,
       {
         method: 'POST',
@@ -165,10 +133,9 @@ export async function analyzeResume(data) {
  */
 export async function checkFastAPIHealth() {
   try {
-    const response = await fetchWithTimeout(
+    const response = await fetch(
       `${FASTAPI_URL}/health`,
-      { method: 'GET' },
-      5000 // 5 second timeout for health check
+      { method: 'GET' }
     );
     return response.ok;
   } catch (error) {

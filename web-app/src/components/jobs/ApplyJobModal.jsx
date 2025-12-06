@@ -79,10 +79,9 @@ export default function ApplyJobModal({ job, onClose }) {
       // Show success message
       setSuccess(true);
       
-      // Redirect after 2 seconds
+      // Close modal after showing success (2 seconds)
       setTimeout(() => {
-        router.push('/');
-        router.refresh();
+        onClose();
       }, 2000);
       
     } catch (err) {
@@ -117,9 +116,6 @@ export default function ApplyJobModal({ job, onClose }) {
           <p className="text-base-content/70 mb-4">
             Your application for <strong>{job.job_title}</strong> has been successfully submitted.
             Our AI is analyzing your resume and you'll hear from us soon.
-          </p>
-          <p className="text-sm text-base-content/50">
-            Redirecting to home page...
           </p>
         </div>
       </div>
