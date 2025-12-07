@@ -56,15 +56,14 @@ export async function POST(request) {
     });
 
     // Insert applicant record into database
-    // Resume URL is stored, not the actual file content
     const result = await sql`
       INSERT INTO applicants (
         job_id, full_name, email, phone, dob, experience_years,
         detail_box, resume_url
       )
       VALUES (
-        ${job_id}, ${full_name}, ${email}, ${phone || null}, 
-        ${dob || null}, ${experience_years}, ${detail_box || null}, 
+        ${job_id}, ${full_name}, ${email}, ${phone}, 
+        ${dob}, ${experience_years}, ${detail_box}, 
         ${blob.url}
       )
       RETURNING *
@@ -72,9 +71,9 @@ export async function POST(request) {
 
     const applicant = result[0];
 
-    // Fetch job details needed for AI resume analysis
+    // Fetch job description for AI resume analysis
     const jobs = await sql`
-      SELECT job_description, required_experience_years 
+      SELECT job_description
       FROM jobs WHERE job_id = ${job_id}
     `;
 
@@ -87,28 +86,23 @@ export async function POST(request) {
         aiAnalysis = await analyzeResume({
           resume_url: blob.url,
           job_description: jobs[0].job_description,
-          required_experience_years: jobs[0].required_experience_years,
+          cover_letter: detail_box,
         });
         
         console.log(`[Applicant ${applicant.applicant_id}] AI analysis received:`, {
           score: aiAnalysis.score,
-          summary_length: aiAnalysis.summary?.length || 0,
-          missing_keywords: aiAnalysis.missing_keywords?.length || 0
+          summary_length: aiAnalysis.summary?.length || 0
         });
         
         // Update applicant record with AI-generated insights
-        const updateResult = await sql`
+        await sql`
           UPDATE applicants 
           SET ai_generated_score = ${aiAnalysis.score},
               ai_generated_summary = ${aiAnalysis.summary}
           WHERE applicant_id = ${applicant.applicant_id}
-          RETURNING applicant_id, ai_generated_score, ai_generated_summary
         `;
         
-        console.log(`[Applicant ${applicant.applicant_id}] Database updated successfully:`, {
-          score: updateResult[0]?.ai_generated_score,
-          summary_preview: updateResult[0]?.ai_generated_summary?.substring(0, 100) + '...'
-        });
+        console.log(`[Applicant ${applicant.applicant_id}] Database updated successfully`);
       } catch (error) {
         // Log error but don't fail the application
         console.error(`[Applicant ${applicant.applicant_id}] AI resume analysis failed:`, {
@@ -124,11 +118,7 @@ export async function POST(request) {
     return NextResponse.json(
       { 
         message: 'Application submitted successfully', 
-        applicant,
-        ai_analysis: aiAnalysis ? {
-          score: aiAnalysis.score,
-          jd_match: aiAnalysis.jd_match
-        } : null
+        applicant
       },
       { status: 201 }
     );

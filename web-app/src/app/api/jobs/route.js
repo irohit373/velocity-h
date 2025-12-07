@@ -3,6 +3,9 @@ import { sql } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
 import { generateJobSummary } from '@/lib/fastapi';
 
+// Increase function timeout to 60 seconds for AI processing
+export const maxDuration = 60;
+
 /**
  * GET /api/auth/jobs
  * Fetch jobs based on access level
@@ -88,8 +91,7 @@ export async function POST(request) {
       );
     }
 
-    // Step 1: Insert job into database
-    // AI summary will be generated and added later
+    // Insert job into database
     const result = await sql`
       INSERT INTO jobs (
         hr_id, job_title, job_description, required_experience_years,
@@ -98,36 +100,51 @@ export async function POST(request) {
       VALUES (
         ${user.userId}, ${job_title}, ${job_description}, 
         ${required_experience_years || 0}, ${tags || []}, 
-        ${location || null}, ${salary_range || null}, ${expiry_date || null}
+        ${location}, ${salary_range}, ${expiry_date}
       )
       RETURNING *
     `;
 
     const job = result[0];
 
-    // Step 2: Generate AI summary asynchronously in the background
-    // Don't await - this runs after response is sent
-    // Improves response time for the user
-    generateJobSummary({
-      job_title,
-      job_description,
-      required_experience_years: required_experience_years || 0,
-      tags: tags || [],
-    }).then(async (summary) => {
+    // Step 2: Generate AI summary SYNCHRONOUSLY (wait for completion)
+    // This ensures the AI summary completes before serverless function terminates
+    let aiSummary = null;
+    console.log(`[Job ${job.job_id}] Starting AI summary generation...`);
+    try {
+      aiSummary = await generateJobSummary({
+        job_title,
+        job_description,
+        required_experience_years: required_experience_years || 0,
+        tags: tags || [],
+      });
+      
+      console.log(`[Job ${job.job_id}] AI summary received:`, {
+        summary_length: aiSummary?.length || 0
+      });
+      
       // Only update if AI generated a summary
-      if (summary) {
+      if (aiSummary) {
         await sql`
           UPDATE jobs 
-          SET ai_generated_summary = ${summary}
+          SET ai_generated_summary = ${aiSummary}
           WHERE job_id = ${job.job_id}
         `;
+        
+        console.log(`[Job ${job.job_id}] Database updated with AI summary`);
+        
+        // Update local job object with AI summary
+        job.ai_generated_summary = aiSummary;
       }
-    }).catch((error) => {
+    } catch (error) {
       // Log error but don't fail the job creation
-      console.error('AI summary generation failed:', error);
-    });
+      console.error(`[Job ${job.job_id}] AI summary generation failed:`, {
+        error: error.message,
+        stack: error.stack
+      });
+    }
 
-    // Return newly created job (without AI summary yet)
+    // Return newly created job
     return NextResponse.json({ job }, { status: 201 });
   } catch (error) {
     console.error('Create job error:', error);
