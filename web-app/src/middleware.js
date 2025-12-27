@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-
+/**
+ * Authentication middleware for protecting routes and managing redirects.
+ * Validates JWT tokens and enforces access control policies.
+ */
 export async function middleware(request) {
     const token = request.cookies.get('auth-token')?.value;
     const { pathname } = request.nextUrl;

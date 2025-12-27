@@ -1,4 +1,6 @@
 import dotenv from 'dotenv';
+// Sample Data Seeding Script for Demo purposes
+
 
 // Load environment variables before importing db
 dotenv.config({ path: '.env.local' });

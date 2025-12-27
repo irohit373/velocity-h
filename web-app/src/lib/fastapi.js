@@ -64,7 +64,7 @@ export async function generateJobSummary(jobData) {
  * @param {string} data.resume_url - URL of the resume file
  * @param {string} data.job_description - Job description
  * @param {string} data.cover_letter - Cover letter or additional details from applicant
- * @returns {Promise<{score: number, summary: string, missing_keywords: array, jd_match: string}>} Score and summary
+ * @returns {Promise<{score: number, summary: string, missing_keywords: array}>} Score and summary
  */
 export async function analyzeResume(data) {
   try {
@@ -112,15 +112,13 @@ export async function analyzeResume(data) {
     console.log('[analyzeResume] Response received:', {
       score: result.score,
       summary_length: result.summary?.length || 0,
-      has_missing_keywords: !!result.missing_keywords,
-      jd_match: result.jd_match
+      has_missing_keywords: !!result.missing_keywords
     });
     
     return {
       score: result.score || 0,
       summary: result.summary || 'Analysis pending',
       missing_keywords: result.missing_keywords || [],
-      jd_match: result.jd_match || '0%',
     };
   } catch (error) {
     console.error('[analyzeResume] ERROR:', error);
@@ -134,8 +132,7 @@ export async function analyzeResume(data) {
     return {
       score: 0,
       summary: 'AI analysis failed. Please review manually.',
-      missing_keywords: [],
-      jd_match: '0%',
+      missing_keywords: []
     };
   }
 }
