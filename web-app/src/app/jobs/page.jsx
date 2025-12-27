@@ -22,7 +22,7 @@ export default function JobsPage() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch('/api/jobs');
+      const response = await fetch('/api/jobs?public=true');
       const data = await response.json();
       setJobs(data.jobs || []);
     } catch (error) {
