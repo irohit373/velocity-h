@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { put } from '@vercel/blob';
 import { analyzeResume } from '@/lib/fastapi';
+import { sendApplicationConfirmation } from '@/lib/email';
 
 // Increase function timeout to 60 seconds for AI processing
 export const maxDuration = 60;
@@ -73,7 +74,7 @@ export async function POST(request) {
 
     // Fetch job description for AI resume analysis
     const jobs = await sql`
-      SELECT job_description
+      SELECT job_description, job_title
       FROM jobs WHERE job_id = ${job_id}
     `;
 
@@ -109,6 +110,19 @@ export async function POST(request) {
           error: error.message,
           stack: error.stack
         });
+      }
+
+      console.log(`[Applicant ${applicant.applicant_id}] Sending confirmation email...`);
+      try {
+        await sendApplicationConfirmation({
+          applicantEmail: email,
+          applicantName: full_name,
+          jobTitle: jobs[0].job_title,
+          jobId: job_id,
+        });
+        console.log(`[Applicant ${applicant.applicant_id}] Confirmation email sent`);
+      } catch (error) {
+        console.error(`[Applicant ${applicant.applicant_id}] Email failed (non-critical):`, error.message);
       }
     } else {
       console.log(`[Applicant ${applicant.applicant_id}] No job found for AI analysis`);
