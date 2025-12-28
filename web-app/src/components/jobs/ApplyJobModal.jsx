@@ -183,89 +183,89 @@ export default function ApplyJobModal({ job, onClose }) {
             </div>
           )}
 
-          <label className="form-control">
-            <span className="label label-text">Full Name *</span>
+          <div>
+            <label className="block text-sm font-medium mb-2">Full Name *</label>
             <input
               type="text"
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="input input-bordered"
+              className="input input-bordered w-full"
               required
             />
-          </label>
+          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <label className="form-control">
-              <span className="label label-text">Email *</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Email *</label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="input input-bordered"
+                className="input input-bordered w-full"
                 required
               />
-            </label>
-            <label className="form-control">
-              <span className="label label-text">Phone</span>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Phone</label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="input input-bordered"
+                className="input input-bordered w-full"
               />
-            </label>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <label className="form-control">
-              <span className="label label-text">Date of Birth</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Date of Birth</label>
               <input
                 type="date"
                 value={formData.dob}
                 onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                className="input input-bordered"
+                className="input input-bordered w-full"
               />
-            </label>
-            <label className="form-control">
-              <span className="label label-text">Experience (Years) *</span>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Experience (Years) *</label>
               <input
                 type="number"
                 min="0"
                 value={formData.experience_years}
                 onChange={(e) => setFormData({ ...formData, experience_years: parseInt(e.target.value) || 0 })}
-                className="input input-bordered"
+                className="input input-bordered w-full"
                 required
               />
-            </label>
+            </div>
           </div>
 
-          <label className="form-control">
-            <span className="label label-text">Cover Letter / Details</span>
+          <div>
+            <label className="block text-sm font-medium mb-2">Cover Letter / Details</label>
             <textarea
               value={formData.detail_box}
               onChange={(e) => setFormData({ ...formData, detail_box: e.target.value })}
               rows={5}
-              className="textarea textarea-bordered"
+              className="textarea textarea-bordered w-full"
               placeholder="Why are you a great fit?"
             />
-          </label>
+          </div>
 
-          <label className="form-control">
-            <span className="label label-text">Resume (PDF) *</span>
+          <div>
+            <label className="block text-sm font-medium mb-2">Resume (PDF) *</label>
             <input
               type="file"
               accept=".pdf"
               onChange={handleResumeChange}
-              className="file-input file-input-bordered"
+              className="file-input file-input-bordered w-full"
               disabled={loading}
             />
             {resume && (
-              <span className="label label-text-alt text-success">
+              <p className="text-sm text-success mt-2">
                 <FileText size={14} className="inline mr-1" />
                 {resume.name} ({(resume.size / 1024).toFixed(2)} KB)
-              </span>
+              </p>
             )}
-          </label>
+          </div>
 
           <div className="modal-action">
             <button

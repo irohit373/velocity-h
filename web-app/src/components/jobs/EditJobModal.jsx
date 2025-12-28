@@ -70,9 +70,9 @@ export default function EditJobModal({ job, onClose, onUpdate }) {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
-        className="modal-box max-w-2xl"
+        className="modal-box max-w-2xl max-h-[90vh] overflow-y-auto"
       >
-        <div className="flex justify-between mb-4">
+        <div className="flex justify-between items-start mb-4">
           <h2 className="text-2xl font-bold">Edit Job</h2>
           <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
             <X size={24} />
@@ -86,93 +86,96 @@ export default function EditJobModal({ job, onClose, onUpdate }) {
             </div>
           )}
 
-          <label className="form-control">
-            <span className="label label-text">Job Title *</span>
+          <div>
+            <label className="block text-sm font-medium mb-2">Job Title *</label>
             <input
               type="text"
               value={formData.job_title}
               onChange={(e) => setFormData({ ...formData, job_title: e.target.value })}
-              className="input input-bordered"
+              className="input input-bordered w-full"
               required
             />
-          </label>
+          </div>
 
-          <label className="form-control">
-            <span className="label label-text">Job Description *</span>
+          <div>
+            <label className="block text-sm font-medium mb-2">Job Description *</label>
             <textarea
               value={formData.job_description}
               onChange={(e) => setFormData({ ...formData, job_description: e.target.value })}
               rows={6}
-              className="textarea textarea-bordered"
+              className="textarea textarea-bordered w-full"
               required
             />
-          </label>
+          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <label className="form-control">
-              <span className="label label-text">Experience (Years)</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Experience (Years)</label>
               <input
                 type="number"
                 min="0"
                 value={formData.required_experience_years}
                 onChange={(e) => setFormData({ ...formData, required_experience_years: parseInt(e.target.value) })}
-                className="input input-bordered"
+                className="input input-bordered w-full"
               />
-            </label>
+            </div>
 
-            <label className="form-control">
-              <span className="label label-text">Location</span>
+            <div>
+              <label className="block text-sm font-medium mb-2">Location</label>
               <input
                 type="text"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="input input-bordered"
+                className="input input-bordered w-full"
                 placeholder="e.g., Remote, NYC"
               />
-            </label>
+            </div>
           </div>
 
-          <label className="form-control">
-            <span className="label label-text">Salary Range</span>
+          <div>
+            <label className="block text-sm font-medium mb-2">Salary Range</label>
             <input
               type="text"
               value={formData.salary_range}
               onChange={(e) => setFormData({ ...formData, salary_range: e.target.value })}
-              className="input input-bordered"
+              className="input input-bordered w-full"
               placeholder="e.g., $80k - $120k"
             />
-          </label>
+          </div>
 
-          <label className="form-control">
-            <span className="label label-text">Tags (comma-separated)</span>
+          <div>
+            <label className="block text-sm font-medium mb-2">Tags (comma-separated)</label>
             <input
               type="text"
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-              className="input input-bordered"
+              className="input input-bordered w-full"
               placeholder="e.g., JavaScript, React"
             />
-          </label>
+          </div>
 
-          <label className="form-control">
-            <span className="label label-text">Expiry Date</span>
+          <div>
+            <label className="block text-sm font-medium mb-2">Expiry Date</label>
             <input
               type="date"
               value={formData.expiry_date}
               onChange={(e) => setFormData({ ...formData, expiry_date: e.target.value })}
-              className="input input-bordered"
+              className="input input-bordered w-full"
             />
-          </label>
+          </div>
 
-          <label className="label cursor-pointer justify-start gap-2">
+          <div className="flex items-center gap-2 py-2">
             <input
               type="checkbox"
+              id="is_active"
               checked={formData.is_active}
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
               className="checkbox checkbox-primary"
             />
-            <span className="label-text">Job is Active</span>
-          </label>
+            <label htmlFor="is_active" className="text-sm font-medium cursor-pointer">
+              Job is Active
+            </label>
+          </div>
 
           {/* Submit Button */}
           <div className="modal-action">
