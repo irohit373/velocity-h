@@ -17,7 +17,7 @@ export default async function RootLayout({ children }) {
   const user = await getCurrentUser();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -30,7 +30,7 @@ export default async function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className="bg-base-100">
+      <body className="bg-base-100" suppressHydrationWarning>
         {/* Wrap entire app in UserProvider to share user data */}
         <UserProvider user={user}>
           <NavbarWrapper />

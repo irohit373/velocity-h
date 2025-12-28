@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Search, Filter, X } from 'lucide-react';
 import JobCard from '@/components/jobs/JobCard';
+import JobCardSkeleton from '@/components/JobCardSkeleton';
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState([]);
@@ -15,7 +17,6 @@ export default function JobsPage() {
   });
   const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch jobs on mount
   useEffect(() => {
     fetchJobs();
   }, []);
@@ -32,20 +33,15 @@ export default function JobsPage() {
     }
   };
 
-  // Filter jobs based on search and filters
   const filteredJobs = jobs.filter((job) => {
-    // Search filter (title, tags, location)
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch = !searchTerm || 
       job.job_title?.toLowerCase().includes(searchLower) ||
       job.location?.toLowerCase().includes(searchLower) ||
       job.tags?.some(tag => tag.toLowerCase().includes(searchLower));
 
-    // Location filter
     const matchesLocation = !filters.location || 
       job.location?.toLowerCase().includes(filters.location.toLowerCase());
-
-    // Experience filter
     const matchesMinExp = !filters.minExperience || 
       job.required_experience_years >= parseInt(filters.minExperience);
     const matchesMaxExp = !filters.maxExperience || 
@@ -56,160 +52,219 @@ export default function JobsPage() {
 
   const clearFilters = () => {
     setSearchTerm('');
-    setFilters({
-      location: '',
-      minExperience: '',
-      maxExperience: '',
-    });
+    setFilters({ location: '', minExperience: '', maxExperience: '' });
   };
 
   const hasActiveFilters = searchTerm || filters.location || filters.minExperience || filters.maxExperience;
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-base-200 py-12 px-4">
-      <div className="container max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4">Open Positions</h1>
-          <p className="text-xl text-base-content/70">
-            Find your next opportunity
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-base-100 via-base-200 to-base-100 py-12 px-4 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            rotate: [0, 90, 0],
+            opacity: [0.03, 0.05, 0.03]
+          }}
+          transition={{ duration: 20, repeat: Infinity }}
+          className="absolute top-1/4 -left-1/4 w-96 h-96 bg-primary rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            rotate: [0, -90, 0],
+            opacity: [0.03, 0.06, 0.03]
+          }}
+          transition={{ duration: 25, repeat: Infinity }}
+          className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-secondary rounded-full blur-3xl"
+        />
+      </div>
 
-        {/* Search Bar */}
-        <div className="card bg-base-100 shadow-md mb-6">
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-8"
+        >
+          <h1 className="text-4xl sm:text-5xl font-bold mb-2">
+            Discover Your Next <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Opportunity</span>
+          </h1>
+          <p className="text-lg sm:text-xl opacity-70">Explore opportunities that match your skills and aspirations</p>
+        </motion.div>
+
+        {/* Search & Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="card bg-base-100 shadow-2xl border border-base-300 mb-6"
+        >
           <div className="card-body p-4">
             <div className="flex flex-col sm:flex-row gap-3">
-              <div className="form-control flex-1">
-                <div className="join w-full">
-                  <span className="btn btn-ghost join-item pointer-events-none">
-                    <Search size={20} />
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Search by job title, tags, or location..."
-                    className="input input-bordered join-item flex-1"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  {searchTerm && (
-                    <button
-                      className="btn btn-ghost join-item"
-                      onClick={() => setSearchTerm('')}
-                    >
-                      <X size={18} />
-                    </button>
-                  )}
-                </div>
-              </div>
-              <button
-                className={`btn btn-outline gap-2 ${showFilters ? 'btn-active' : ''}`}
+              {/* Search Input */}
+              <label className="input input-bordered flex items-center gap-2 flex-1">
+                <Search size={20} />
+                <input
+                  type="text"
+                  className="grow"
+                  placeholder="Search by job title, location, or skills..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </label>
+
+              {/* Filter Toggle */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`btn ${showFilters ? 'btn-primary' : 'btn-outline'}`}
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <Filter size={20} />
-                <span className="hidden sm:inline">Filters</span>
-                {hasActiveFilters && <span className="badge badge-primary badge-sm">•</span>}
-              </button>
+                Filters
+                {hasActiveFilters && <span className="badge badge-secondary">•</span>}
+              </motion.button>
             </div>
 
-            {/* Advanced Filters */}
+            {/* Filter Panel */}
             {showFilters && (
-              <div className="divider my-2"></div>
-            )}
-            {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Location</span>
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="divider my-2"></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <label className="form-control">
+                    <span className="label label-text">Location</span>
+                    <input
+                      type="text"
+                      placeholder="e.g., Remote, NYC"
+                      className="input input-bordered input-sm"
+                      value={filters.location}
+                      onChange={(e) => setFilters({...filters, location: e.target.value})}
+                    />
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., New York, Remote"
-                    className="input input-bordered input-sm"
-                    value={filters.location}
-                    onChange={(e) => setFilters({...filters, location: e.target.value})}
-                  />
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Min Experience (years)</span>
+                  <label className="form-control">
+                    <span className="label label-text">Min Experience</span>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                      className="input input-bordered input-sm"
+                      value={filters.minExperience}
+                      onChange={(e) => setFilters({...filters, minExperience: e.target.value})}
+                    />
                   </label>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    min="0"
-                    className="input input-bordered input-sm"
-                    value={filters.minExperience}
-                    onChange={(e) => setFilters({...filters, minExperience: e.target.value})}
-                  />
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Max Experience (years)</span>
+                  <label className="form-control">
+                    <span className="label label-text">Max Experience</span>
+                    <input
+                      type="number"
+                      placeholder="20"
+                      min="0"
+                      className="input input-bordered input-sm"
+                      value={filters.maxExperience}
+                      onChange={(e) => setFilters({...filters, maxExperience: e.target.value})}
+                    />
                   </label>
-                  <input
-                    type="number"
-                    placeholder="20"
-                    min="0"
-                    className="input input-bordered input-sm"
-                    value={filters.maxExperience}
-                    onChange={(e) => setFilters({...filters, maxExperience: e.target.value})}
-                  />
                 </div>
-              </div>
-            )}
-
-            {/* Clear Filters */}
-            {hasActiveFilters && (
-              <div className="flex justify-end mt-4">
-                <button
-                  className="btn btn-ghost btn-sm gap-2"
-                  onClick={clearFilters}
-                >
-                  <X size={16} />
-                  Clear All Filters
-                </button>
-              </div>
+                {hasActiveFilters && (
+                  <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                    className="btn btn-ghost btn-sm self-end mt-2"
+                    onClick={clearFilters}
+                  >
+                    <X size={16} />
+                    Clear Filters
+                  </motion.button>
+                )}
+              </motion.div>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Results Count */}
-        <div className="mb-6 text-center">
-          <p className="text-base-content/70">
-            Showing <span className="font-semibold text-primary">{filteredJobs.length}</span> of <span className="font-semibold">{jobs.length}</span> jobs
-          </p>
-        </div>
+        {!loading && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-center mb-6 opacity-70"
+          >
+            Showing <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", delay: 0.3 }}
+              className="text-primary font-semibold"
+            >{filteredJobs.length}</motion.span> of {jobs.length} opportunities
+          </motion.p>
+        )}
 
-        {/* Job Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredJobs.map((job) => (
-            <JobCard key={job.job_id} job={job} />
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {filteredJobs.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-base-content/50 text-lg mb-4">
+        {/* Job Cards */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <JobCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : filteredJobs.length > 0 ? (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.08,
+                  delayChildren: 0.2
+                }
+              }
+            }}
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {filteredJobs.map((job) => (
+              <JobCard key={job.job_id} job={job} />
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="text-center py-12"
+          >
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="mb-6"
+            >
+              <div className="w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                <Search size={40} className="text-primary" />
+              </div>
+            </motion.div>
+            <p className="text-lg opacity-50 mb-4">
               {hasActiveFilters 
-                ? 'No jobs match your search criteria. Try adjusting your filters.'
-                : 'No open positions at the moment. Check back soon!'}
+                ? 'No opportunities match your criteria'
+                : 'No open positions at the moment'}
             </p>
             {hasActiveFilters && (
-              <button className="btn btn-primary btn-sm" onClick={clearFilters}>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn btn-primary"
+                onClick={clearFilters}
+              >
                 Clear Filters
-              </button>
+              </motion.button>
             )}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

@@ -38,28 +38,29 @@ export default async function JobApplicantsPage({ params }) {
   `;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-base-200 p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Back Button */}
         <Link
           href="/dashboard/recruitment"
-          className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4"
+          className="btn btn-ghost gap-2 mb-4"
         >
-          <ArrowLeft size={20} className="mr-2" />
+          <ArrowLeft size={20} />
           Back to Jobs
         </Link>
 
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">{job.job_title}</h1>
-          <p className="text-gray-600 mt-2">
-            {applicants.length} {applicants.length === 1 ? 'application' : 'applications'}
-          </p>
+        <div className="card bg-base-100 shadow mb-6">
+          <div className="card-body">
+            <h1 className="text-3xl font-bold">{job.job_title}</h1>
+            <p className="opacity-70">
+              {applicants.length} {applicants.length === 1 ? 'application' : 'applications'}
+            </p>
+          </div>
         </div>
 
-        {/* Applicants Table */}
-        <div className="bg-white rounded-lg shadow">
-          <ApplicantTable applicants={applicants} />
+        <div className="card bg-base-100 shadow">
+          <div className="card-body">
+            <ApplicantTable applicants={applicants} />
+          </div>
         </div>
       </div>
     </div>

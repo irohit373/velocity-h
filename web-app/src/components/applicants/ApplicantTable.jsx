@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Eye, Download, Star, Calendar } from 'lucide-react';
 import ApplicantModal from './ApplicantModal.jsx';
 
@@ -205,20 +206,18 @@ export default function ApplicantTable({ applicants }) {
                     {applicant.experience_years} years
                   </td>
                   <td>
-                    <div className={`flex items-center space-x-1 ${getScoreColor(applicant.ai_generated_score)}`}>
+                    <div className={`flex items-center gap-1 ${getScoreColor(applicant.ai_generated_score)}`}>
                       <Star size={16} fill="currentColor" />
-                      <span className="text-sm font-semibold">
+                      <span className="font-semibold">
                         {applicant.ai_generated_score ? Number(applicant.ai_generated_score).toFixed(1) : 'Pending'}
                       </span>
                     </div>
                   </td>
-                  <td className="text-base-content/70">
+                  <td className="opacity-70">
                     {formatDate(applicant.applied_at)}
                   </td>
                   <td>
-                    <span
-                      className={`badge ${getStatusBadge(applicant.status)}`}
-                    >
+                    <span className={`badge ${getStatusBadge(applicant.status)}`}>
                       {formatStatus(applicant.status)}
                     </span>
                   </td>
@@ -228,7 +227,7 @@ export default function ApplicantTable({ applicants }) {
                         e.stopPropagation();
                         openScheduleDialog(applicant);
                       }}
-                      className="btn btn-sm btn-outline btn-info gap-1"
+                      className="btn btn-sm btn-info"
                       title="Schedule Interview"
                     >
                       <Calendar size={16} />
@@ -236,7 +235,7 @@ export default function ApplicantTable({ applicants }) {
                     </button>
                   </td>
                   <td>
-                    <div className="flex space-x-2">
+                    <div className="flex gap-2">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();

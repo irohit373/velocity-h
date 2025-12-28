@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { X, Loader2, Upload, FileText } from 'lucide-react';
 
 // Modal component for job application form
@@ -99,7 +100,12 @@ export default function ApplyJobModal({ job, onClose }) {
   if (success) {
     return (
       <div className="modal modal-open">
-        <div className="modal-box text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="modal-box text-center"
+        >
           <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               className="w-8 h-8 text-success"
@@ -122,14 +128,20 @@ export default function ApplyJobModal({ job, onClose }) {
             Your application for <strong>{job.job_title}</strong> has been successfully submitted.
             Our AI is analyzing your resume and you'll hear from us soon.
           </p>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box max-w-3xl max-h-[90vh] overflow-y-auto">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className="modal-box max-w-3xl max-h-[90vh] overflow-y-auto"
+      >
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -147,13 +159,13 @@ export default function ApplyJobModal({ job, onClose }) {
 
         {/* Job Details */}
         <div className="bg-base-200 p-4 rounded-lg mb-4">
-          <h3 className="font-semibold mb-2">About this position:</h3>
-          <p className="text-sm text-base-content/70 mb-3 line-clamp-3">
+          <h3 className="font-semibold mb-2">About this position</h3>
+          <p className="text-sm opacity-70 mb-3 line-clamp-3">
             {job.job_description}
           </p>
           <div className="flex flex-wrap gap-2">
             <span className="badge badge-outline">
-              {job.required_experience_years} years required
+              {job.required_experience_years} years
             </span>
             {job.tags?.map((tag, idx) => (
               <span key={idx} className="badge badge-ghost badge-sm">
@@ -171,113 +183,90 @@ export default function ApplyJobModal({ job, onClose }) {
             </div>
           )}
 
-          {/* Full Name */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Full Name *</span>
-            </label>
+          <label className="form-control">
+            <span className="label label-text">Full Name *</span>
             <input
               type="text"
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="input input-bordered w-full"
+              className="input input-bordered"
               required
             />
-          </div>
+          </label>
 
-          {/* Email & Phone */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Email *</span>
-              </label>
+            <label className="form-control">
+              <span className="label label-text">Email *</span>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="input input-bordered w-full"
+                className="input input-bordered"
                 required
               />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Phone</span>
-              </label>
+            </label>
+            <label className="form-control">
+              <span className="label label-text">Phone</span>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="input input-bordered w-full"
+                className="input input-bordered"
               />
-            </div>
+            </label>
           </div>
 
-          {/* DOB & Experience */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Date of Birth</span>
-              </label>
+            <label className="form-control">
+              <span className="label label-text">Date of Birth</span>
               <input
                 type="date"
                 value={formData.dob}
                 onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                className="input input-bordered w-full"
+                className="input input-bordered"
               />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Years of Experience *</span>
-              </label>
+            </label>
+            <label className="form-control">
+              <span className="label label-text">Experience (Years) *</span>
               <input
                 type="number"
                 min="0"
                 value={formData.experience_years}
                 onChange={(e) => setFormData({ ...formData, experience_years: parseInt(e.target.value) || 0 })}
-                className="input input-bordered w-full"
+                className="input input-bordered"
                 required
               />
-            </div>
+            </label>
           </div>
 
-          {/* Cover Letter */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Cover Letter / Additional Details</span>
-            </label>
+          <label className="form-control">
+            <span className="label label-text">Cover Letter / Details</span>
             <textarea
               value={formData.detail_box}
               onChange={(e) => setFormData({ ...formData, detail_box: e.target.value })}
               rows={5}
-              className="textarea textarea-bordered w-full"
-              placeholder="Tell us why you're a great fit for this role..."
+              className="textarea textarea-bordered"
+              placeholder="Why are you a great fit?"
             />
-          </div>
+          </label>
 
-          {/* Resume Upload */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Resume (PDF only) *</span>
-            </label>
+          <label className="form-control">
+            <span className="label label-text">Resume (PDF) *</span>
             <input
               type="file"
               accept=".pdf"
               onChange={handleResumeChange}
-              className="file-input file-input-bordered w-full"
-              id="resume-upload"
+              className="file-input file-input-bordered"
               disabled={loading}
             />
             {resume && (
-              <label className="label">
-                <span className="label-text-alt text-success">
-                  <FileText size={14} className="inline mr-1" />
-                  {resume.name} ({(resume.size / 1024).toFixed(2)} KB)
-                </span>
-              </label>
+              <span className="label label-text-alt text-success">
+                <FileText size={14} className="inline mr-1" />
+                {resume.name} ({(resume.size / 1024).toFixed(2)} KB)
+              </span>
             )}
-          </div>
+          </label>
 
-          {/* Submit Button */}
           <div className="modal-action">
             <button
               type="button"
@@ -293,7 +282,7 @@ export default function ApplyJobModal({ job, onClose }) {
               className="btn btn-primary"
             >
               {loading && <Loader2 className="animate-spin" size={18} />}
-              <span>{loading ? 'Submitting...' : 'Submit Application'}</span>
+              {loading ? 'Submitting...' : 'Submit Application'}
             </button>
           </div>
 
@@ -303,7 +292,7 @@ export default function ApplyJobModal({ job, onClose }) {
             </div>
           )}
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

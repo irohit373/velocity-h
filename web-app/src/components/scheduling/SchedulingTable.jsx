@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Calendar, Video, Edit2, Trash2, ExternalLink } from 'lucide-react';
 
-export default function SchedulingTable({ schedules, onEdit, onDelete }) {
+export default function SchedulingTable({ schedules, onEdit, onDelete, onViewApplicant }) {
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
@@ -54,7 +55,15 @@ export default function SchedulingTable({ schedules, onEdit, onDelete }) {
             schedules.map((schedule) => (
               <tr key={schedule.scheduling_id}>
                 <td>
-                  <div>
+                  <div 
+                    onClick={() => {
+                      console.log('Applicant clicked:', schedule.applicant_id);
+                      if (onViewApplicant) {
+                        onViewApplicant(schedule.applicant_id);
+                      }
+                    }}
+                    className="cursor-pointer hover:text-primary transition-colors"
+                  >
                     <div className="font-semibold">{schedule.full_name}</div>
                     <div className="text-sm text-base-content/70">{schedule.email}</div>
                   </div>

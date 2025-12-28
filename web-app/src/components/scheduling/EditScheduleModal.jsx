@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Calendar, X } from 'lucide-react';
 
 export default function EditScheduleModal({ isOpen, onClose, onSubmit, schedule }) {
@@ -50,7 +51,13 @@ export default function EditScheduleModal({ isOpen, onClose, onSubmit, schedule 
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className="modal-box"
+      >
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-lg flex items-center gap-2">
             <Calendar size={20} />
@@ -124,7 +131,7 @@ export default function EditScheduleModal({ isOpen, onClose, onSubmit, schedule 
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
       <div className="modal-backdrop" onClick={onClose}></div>
     </div>
   );

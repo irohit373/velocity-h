@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { X, Eye, Mail, Phone, Calendar, Briefcase } from 'lucide-react';
 
 // Modal component to display detailed applicant information
@@ -48,7 +49,13 @@ export default function ApplicantModal({ applicant, onClose, onStatusUpdate }) {
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box max-w-3xl">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className="modal-box max-w-3xl"
+      >
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">{applicant.full_name}</h2>
@@ -59,27 +66,26 @@ export default function ApplicantModal({ applicant, onClose, onStatusUpdate }) {
 
         {/* Content */}
         <div className="space-y-6">
-          {/* Contact Info */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center space-x-2 text-base-content/70">
+          <div className="grid grid-cols-2 gap-4 text-sm opacity-70">
+            <div className="flex items-center gap-2">
               <Mail size={18} />
               <span>{applicant.email}</span>
             </div>
             {applicant.phone && (
-              <div className="flex items-center space-x-2 text-base-content/70">
+              <div className="flex items-center gap-2">
                 <Phone size={18} />
                 <span>{applicant.phone}</span>
               </div>
             )}
             {applicant.dob && (
-              <div className="flex items-center space-x-2 text-base-content/70">
+              <div className="flex items-center gap-2">
                 <Calendar size={18} />
                 <span>DOB: {formatDate(applicant.dob)}</span>
               </div>
             )}
-            <div className="flex items-center space-x-2 text-base-content/70">
+            <div className="flex items-center gap-2">
               <Briefcase size={18} />
-              <span>{applicant.experience_years} years experience</span>
+              <span>{applicant.experience_years} years</span>
             </div>
           </div>
 
@@ -98,11 +104,10 @@ export default function ApplicantModal({ applicant, onClose, onStatusUpdate }) {
             </div>
           )}
 
-          {/* AI Summary */}
           {applicant.ai_generated_summary && (
             <div>
               <h3 className="font-semibold mb-2">AI Analysis</h3>
-              <p className="text-base-content/70 whitespace-pre-line">
+              <p className="opacity-70 whitespace-pre-line">
                 {applicant.ai_generated_summary}
               </p>
             </div>
@@ -160,31 +165,28 @@ export default function ApplicantModal({ applicant, onClose, onStatusUpdate }) {
             </div>
           </div>
 
-          {/* Cover Letter */}
           {applicant.detail_box && (
             <div>
               <h3 className="font-semibold mb-2">Cover Letter</h3>
-              <p className="text-base-content/70 whitespace-pre-line">
+              <p className="opacity-70 whitespace-pre-line">
                 {applicant.detail_box}
               </p>
             </div>
           )}
 
-          {/* Resume Download */}
           <div>
             <a
               href={applicant.resume_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-success gap-2"
+              className="btn btn-success"
             >
               <Eye size={18} />
               View Resume
             </a>
           </div>
 
-          {/* Applied Date */}
-          <div className="text-sm text-base-content/50">
+          <div className="text-sm opacity-50">
             Applied on {formatDate(applicant.applied_at)}
           </div>
         </div>
@@ -194,7 +196,7 @@ export default function ApplicantModal({ applicant, onClose, onStatusUpdate }) {
             Close
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

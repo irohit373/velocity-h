@@ -4,17 +4,11 @@ import { verifyToken } from '@/lib/auth';
  * Authentication middleware for protecting routes and managing redirects.
  * Validates JWT tokens and enforces access control policies.
  */
-export async function middleware(request) {
+export async function proxy(request) {
     const token = request.cookies.get('auth-token')?.value;
     const { pathname } = request.nextUrl;
 
     console.log('Middleware - Path:', pathname, 'Has Token:', !!token);
-
-    // Redirect /dashboard to /dashboard/recruitment
-    if (pathname === '/dashboard') {
-        console.log('Redirecting /dashboard to /dashboard/recruitment');
-        return NextResponse.redirect(new URL('/dashboard/recruitment', request.url));
-    }
 
     // Protect dashboard routes
     if (pathname.startsWith('/dashboard')) {
@@ -37,8 +31,8 @@ export async function middleware(request) {
         if (token) {
             const decoded = await verifyToken(token); // await needed
             if (decoded) {
-                console.log('Already authenticated, redirecting to /dashboard/recruitment');
-                return NextResponse.redirect(new URL('/dashboard/recruitment', request.url));
+                console.log('Already authenticated, redirecting to /dashboard');
+                return NextResponse.redirect(new URL('/dashboard', request.url));
             }
         }
     }

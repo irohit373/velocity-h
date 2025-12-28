@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { Pencil, Trash2, Users, Eye } from 'lucide-react';
 import EditJobModal from './EditJobModal';
 
@@ -71,7 +72,7 @@ export default function JobTable({ initialJobs }) {
           <tbody>
             {jobs.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-12 text-base-content/50">
+                <td colSpan={6} className="text-center py-12 opacity-50">
                   No jobs posted yet. Click "Add New Job" to get started.
                 </td>
               </tr>
@@ -103,16 +104,14 @@ export default function JobTable({ initialJobs }) {
                     <button
                       onClick={() => handleToggleActive(job.job_id, job.is_active)}
                       className={`badge cursor-pointer ${
-                        job.is_active
-                          ? 'badge-success badge-outline'
-                          : 'badge-ghost'
+                        job.is_active ? 'badge-success' : 'badge-ghost'
                       }`}
                     >
                       {job.is_active ? 'Active' : 'Inactive'}
                     </button>
                   </td>
                   <td>
-                    <div className="flex space-x-2">
+                    <div className="flex gap-2">
                       <button
                         onClick={() => router.push(`/dashboard/recruitment/${job.job_id}`)}
                         className="btn btn-ghost btn-sm"

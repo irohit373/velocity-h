@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { X, Loader2 } from 'lucide-react';
 
 // Modal component for editing existing job postings
@@ -64,16 +65,20 @@ export default function EditJobModal({ job, onClose, onUpdate }) {
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box max-w-2xl">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className="modal-box max-w-2xl"
+      >
+        <div className="flex justify-between mb-4">
           <h2 className="text-2xl font-bold">Edit Job</h2>
           <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
             <X size={24} />
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="alert alert-error">
@@ -81,110 +86,93 @@ export default function EditJobModal({ job, onClose, onUpdate }) {
             </div>
           )}
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Job Title *</span>
-            </label>
+          <label className="form-control">
+            <span className="label label-text">Job Title *</span>
             <input
               type="text"
               value={formData.job_title}
               onChange={(e) => setFormData({ ...formData, job_title: e.target.value })}
-              className="input input-bordered w-full"
+              className="input input-bordered"
               required
             />
-          </div>
+          </label>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Job Description *</span>
-            </label>
+          <label className="form-control">
+            <span className="label label-text">Job Description *</span>
             <textarea
               value={formData.job_description}
               onChange={(e) => setFormData({ ...formData, job_description: e.target.value })}
               rows={6}
-              className="textarea textarea-bordered w-full"
+              className="textarea textarea-bordered"
               required
             />
-          </div>
+          </label>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Required Experience (Years)</span>
-              </label>
+            <label className="form-control">
+              <span className="label label-text">Experience (Years)</span>
               <input
                 type="number"
                 min="0"
                 value={formData.required_experience_years}
                 onChange={(e) => setFormData({ ...formData, required_experience_years: parseInt(e.target.value) })}
-                className="input input-bordered w-full"
+                className="input input-bordered"
               />
-            </div>
+            </label>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Location</span>
-              </label>
+            <label className="form-control">
+              <span className="label label-text">Location</span>
               <input
                 type="text"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="input input-bordered w-full"
-                placeholder="e.g., Remote, New York, Hybrid"
+                className="input input-bordered"
+                placeholder="e.g., Remote, NYC"
               />
-            </div>
+            </label>
           </div>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Salary Range</span>
-            </label>
+          <label className="form-control">
+            <span className="label label-text">Salary Range</span>
             <input
               type="text"
               value={formData.salary_range}
               onChange={(e) => setFormData({ ...formData, salary_range: e.target.value })}
-              className="input input-bordered w-full"
-              placeholder="e.g., $80,000 - $120,000"
+              className="input input-bordered"
+              placeholder="e.g., $80k - $120k"
             />
-          </div>
+          </label>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Tags (comma-separated)</span>
-            </label>
+          <label className="form-control">
+            <span className="label label-text">Tags (comma-separated)</span>
             <input
               type="text"
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-              className="input input-bordered w-full"
-              placeholder="e.g., JavaScript, React, Remote"
+              className="input input-bordered"
+              placeholder="e.g., JavaScript, React"
             />
-          </div>
+          </label>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Expiry Date</span>
-            </label>
+          <label className="form-control">
+            <span className="label label-text">Expiry Date</span>
             <input
               type="date"
               value={formData.expiry_date}
               onChange={(e) => setFormData({ ...formData, expiry_date: e.target.value })}
-              className="input input-bordered w-full"
+              className="input input-bordered"
             />
-          </div>
+          </label>
 
-          <div className="form-control">
-            <label className="label cursor-pointer">
-              <span className="label-text">Job is Active</span>
-              <input
-                type="checkbox"
-                id="is_active"
-                checked={formData.is_active}
-                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="checkbox checkbox-primary"
-              />
-            </label>
-          </div>
+          <label className="label cursor-pointer justify-start gap-2">
+            <input
+              type="checkbox"
+              checked={formData.is_active}
+              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+              className="checkbox checkbox-primary"
+            />
+            <span className="label-text">Job is Active</span>
+          </label>
 
           {/* Submit Button */}
           <div className="modal-action">
@@ -205,7 +193,7 @@ export default function EditJobModal({ job, onClose, onUpdate }) {
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -28,7 +28,7 @@ export default async function RecruitmentPage() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold">Job Management</h1>
-            <p className="text-base-content/70 mt-1">Manage your job postings and applications</p>
+            <p className="opacity-70 mt-1">Manage your job postings and applications</p>
           </div>
           <AddJobButton />
         </div>

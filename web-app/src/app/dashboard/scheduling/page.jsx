@@ -1,11 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Calendar, Plus, RefreshCw } from 'lucide-react';
 import { useUser } from '@/providers/UserProvider';
 import SchedulingTable from '@/components/scheduling/SchedulingTable';
 import CreateScheduleModal from '@/components/scheduling/CreateScheduleModal';
 import EditScheduleModal from '@/components/scheduling/EditScheduleModal';
+import ApplicantModal from '@/components/applicants/ApplicantModal';
+import StatCardSkeleton from '@/components/StatCardSkeleton';
+import TableSkeleton from '@/components/TableSkeleton';
 
 export default function SchedulingPage() {
   const user = useUser();
@@ -16,6 +20,8 @@ export default function SchedulingPage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [applicantModalOpen, setApplicantModalOpen] = useState(false);
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
 
   // Fetch schedules from API
   const fetchSchedules = async () => {
@@ -133,13 +139,57 @@ export default function SchedulingPage() {
     setRefreshing(false);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
-  }
+  // Handle view applicant
+  const handleViewApplicant = async (applicantId) => {
+    console.log('View applicant clicked:', applicantId);
+    try {
+      const response = await fetch(`/api/applicants/${applicantId}`);
+      console.log('Response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Applicant data:', data);
+        setSelectedApplicant(data.applicant);
+        setApplicantModalOpen(true);
+        console.log('Modal should open now');
+      } else {
+        const error = await response.json();
+        console.error('API error:', error);
+        alert('Failed to load applicant details');
+      }
+    } catch (error) {
+      console.error('Error fetching applicant:', error);
+      alert('Failed to load applicant details: ' + error.message);
+    }
+  };
+
+  // Handle applicant status update
+  const handleStatusUpdate = async (applicantId, newStatus) => {
+    try {
+      const response = await fetch(`/api/applicants/${applicantId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update status');
+      }
+
+      // Refresh data and update modal
+      await Promise.all([fetchSchedules(), fetchApplicants()]);
+      
+      // Update modal with fresh data
+      const updatedResponse = await fetch(`/api/applicants/${applicantId}`);
+      if (updatedResponse.ok) {
+        const data = await updatedResponse.json();
+        setSelectedApplicant(data.applicant);
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Failed to update applicant status');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-base-200 p-8">
@@ -150,7 +200,7 @@ export default function SchedulingPage() {
             <Calendar size={32} className="text-primary" />
             <div>
               <h1 className="text-3xl font-bold">Interview Scheduling</h1>
-              <p className="text-base-content/70">
+              <p className="opacity-70">
                 Manage and schedule interviews with candidates
               </p>
             </div>
@@ -175,41 +225,59 @@ export default function SchedulingPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="stat bg-base-100 rounded-lg shadow">
-            <div className="stat-title">Total Scheduled</div>
-            <div className="stat-value text-primary">{schedules.length}</div>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <StatCardSkeleton key={i} />
+            ))}
           </div>
-          <div className="stat bg-base-100 rounded-lg shadow">
-            <div className="stat-title">Upcoming</div>
-            <div className="stat-value text-info">
-              {schedules.filter(s => new Date(s.interview_time) > new Date()).length}
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
+          >
+            <div className="stat bg-base-100 rounded-lg shadow">
+              <div className="stat-title">Total Scheduled</div>
+              <div className="stat-value text-primary">{schedules.length}</div>
             </div>
-          </div>
-          <div className="stat bg-base-100 rounded-lg shadow">
-            <div className="stat-title">Completed</div>
-            <div className="stat-value text-success">
-              {schedules.filter(s => new Date(s.interview_time) < new Date()).length}
+            <div className="stat bg-base-100 rounded-lg shadow">
+              <div className="stat-title">Upcoming</div>
+              <div className="stat-value text-info">
+                {schedules.filter(s => new Date(s.interview_time) > new Date()).length}
+              </div>
             </div>
-          </div>
-          <div className="stat bg-base-100 rounded-lg shadow">
-            <div className="stat-title">Eligible Applicants</div>
-            <div className="stat-value text-accent">{applicants.length}</div>
-          </div>
-        </div>
+            <div className="stat bg-base-100 rounded-lg shadow">
+              <div className="stat-title">Completed</div>
+              <div className="stat-value text-success">
+                {schedules.filter(s => new Date(s.interview_time) < new Date()).length}
+              </div>
+            </div>
+            <div className="stat bg-base-100 rounded-lg shadow">
+              <div className="stat-title">Eligible Applicants</div>
+              <div className="stat-value text-accent">{applicants.length}</div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Schedules Table */}
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Scheduled Interviews</h2>
-            <SchedulingTable
-              schedules={schedules}
-              onEdit={(schedule) => {
-                setSelectedSchedule(schedule);
-                setEditModalOpen(true);
-              }}
-              onDelete={handleDeleteSchedule}
-            />
+            {loading ? (
+              <TableSkeleton rows={5} columns={6} />
+            ) : (
+              <SchedulingTable
+                schedules={schedules}
+                onEdit={(schedule) => {
+                  setSelectedSchedule(schedule);
+                  setEditModalOpen(true);
+                }}
+                onDelete={handleDeleteSchedule}
+                onViewApplicant={handleViewApplicant}
+              />
+            )}
           </div>
         </div>
 
@@ -230,6 +298,18 @@ export default function SchedulingPage() {
           onSubmit={handleEditSchedule}
           schedule={selectedSchedule}
         />
+
+        {/* Applicant Details Modal */}
+        {applicantModalOpen && selectedApplicant && (
+          <ApplicantModal
+            applicant={selectedApplicant}
+            onClose={() => {
+              setApplicantModalOpen(false);
+              setSelectedApplicant(null);
+            }}
+            onStatusUpdate={handleStatusUpdate}
+          />
+        )}
       </div>
     </div>
   );

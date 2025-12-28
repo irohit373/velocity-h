@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Calendar, Clock, FileText, Search, X } from 'lucide-react';
 
 export default function CreateScheduleModal({ isOpen, onClose, onSubmit, applicants }) {
@@ -98,7 +99,13 @@ export default function CreateScheduleModal({ isOpen, onClose, onSubmit, applica
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box max-w-2xl">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className="modal-box max-w-2xl"
+      >
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-lg flex items-center gap-2">
             <Calendar size={20} />
@@ -132,18 +139,17 @@ export default function CreateScheduleModal({ isOpen, onClose, onSubmit, applica
                 />
               </div>
 
-              {/* Dropdown Menu */}
               {showDropdown && filteredApplicants.length > 0 && (
-                <div className="absolute z-50 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                <div className="absolute z-50 w-full mt-1 bg-base-100 border rounded-lg shadow-lg max-h-60 overflow-y-auto">
                   {filteredApplicants.map((applicant) => (
                     <div
                       key={applicant.applicant_id}
                       onClick={() => handleApplicantSelect(applicant)}
-                      className="px-4 py-3 hover:bg-base-200 cursor-pointer border-b border-base-300 last:border-b-0"
+                      className="px-4 py-3 hover:bg-base-200 cursor-pointer border-b last:border-b-0"
                     >
                       <div className="font-semibold">{applicant.full_name}</div>
-                      <div className="text-sm text-base-content/70">{applicant.email}</div>
-                      <div className="text-xs text-base-content/50 flex items-center gap-2 mt-1">
+                      <div className="text-sm opacity-70">{applicant.email}</div>
+                      <div className="flex gap-2 mt-1">
                         <span className="badge badge-sm badge-outline">{applicant.job_title}</span>
                         <span className={`badge badge-sm ${
                           applicant.status === 'reviewed' ? 'badge-info' :
@@ -261,7 +267,7 @@ export default function CreateScheduleModal({ isOpen, onClose, onSubmit, applica
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
       <div className="modal-backdrop" onClick={onClose}></div>
     </div>
   );

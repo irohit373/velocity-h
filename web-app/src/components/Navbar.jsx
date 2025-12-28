@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useUser } from "@/providers/UserProvider";
+import { motion } from "framer-motion";
 import UserDropdown from "./UserDropdown";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -31,26 +32,25 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar bg-base-100 border-b border-base-300 px-4 lg:px-8 h-14 min-h-14">
+    <nav className="navbar bg-base-100 border-b px-4 lg:px-8 sticky top-0 z-50 shadow-sm backdrop-blur-sm bg-base-100/95">
       <div className="flex-1">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link href="/" className="btn btn-ghost gap-2 text-lg font-bold">
           <img src="/favicon.ico" alt="Logo" className="w-8 h-8" />
-          <span className="text-lg font-bold tracking-wider hidden sm:inline bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '0.05em' }}>
+          <span className="hidden sm:inline bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             VELOCITY H
           </span>
         </Link>
       </div>
 
       {/* Desktop Navigation */}
-      <div className="flex-none hidden lg:flex items-center gap-2">
-        <Link href="/jobs" className="px-3 py-1.5 font-medium hover:bg-base-200 rounded-lg transition-colors">
+      <div className="flex-none hidden lg:flex gap-2">
+        <Link href="/jobs" className="btn btn-ghost">
           Jobs
         </Link>
 
-        {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
-          className="btn btn-ghost btn-sm btn-square"
+          className="btn btn-ghost btn-square"
           aria-label="Toggle theme"
         >
           {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
@@ -59,11 +59,11 @@ export default function Navbar() {
         {user ? (
           <UserDropdown user={user} />
         ) : (
-          <div className="flex items-center gap-2">
-            <Link href="/signup" className="px-3 py-1.5 font-medium hover:bg-base-200 rounded-lg transition-colors">
+          <div className="flex gap-2">
+            <Link href="/signup" className="btn btn-ghost">
               Sign Up
             </Link>
-            <Link href="/signin" className="btn btn-primary btn-sm h-9 min-h-9">
+            <Link href="/signin" className="btn btn-primary">
               Login
             </Link>
           </div>
@@ -84,15 +84,19 @@ export default function Navbar() {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/20 backdrop-blur-sm"
             onClick={() => setMobileMenuOpen(false)}
           />
           
-          {/* Drawer */}
-          <div className="fixed top-0 right-0 bottom-0 w-64 bg-base-100 shadow-xl">
-            <div className="flex items-center justify-between p-4 border-b border-base-300">
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.3 }}
+            className="fixed top-0 right-0 bottom-0 w-64 bg-base-100 shadow-xl"
+          >
+            <div className="flex justify-between items-center p-4 border-b">
               <span className="text-lg font-bold">Menu</span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
@@ -126,21 +130,27 @@ export default function Navbar() {
 
               {user ? (
                 <>
-                  <li className="menu-title mt-4">
-                    <span>Account</span>
+                  <li className="menu-title mt-4">Account</li>
+                  <li>
+                    <div className="p-3 bg-base-200 rounded-lg pointer-events-none">
+                      <div className="font-semibold">{user.name || 'User'}</div>
+                      <div className="text-xs opacity-70">{user.email}</div>
+                    </div>
                   </li>
                   <li>
-                    <div className="flex flex-col gap-1 p-3 bg-base-200 rounded-lg pointer-events-none">
-                      <span className="font-semibold text-sm">{user.name || 'User'}</span>
-                      <span className="text-xs opacity-70 truncate">{user.email}</span>
-                    </div>
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
                   </li>
                   <li>
                     <Link
                       href="/dashboard/recruitment"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Dashboard
+                      Recruitment
                     </Link>
                   </li>
                   <li>
@@ -185,7 +195,7 @@ export default function Navbar() {
                 </>
               )}
             </ul>
-          </div>
+          </motion.div>
         </div>
       )}
     </nav>

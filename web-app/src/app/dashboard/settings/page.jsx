@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { Settings, Calendar, Mail, User, Check, X, Link as LinkIcon } from 'lucide-react';
 import { useUser } from '@/providers/UserProvider';
 
@@ -103,7 +104,12 @@ export default function SettingsPage() {
         </div>
 
         {/* Account Information */}
-        <div className="card bg-base-100 shadow-md mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="card bg-base-100 shadow-md mb-6"
+        >
           <div className="card-body">
             <h2 className="card-title flex items-center gap-2">
               <User size={20} />
@@ -114,25 +120,30 @@ export default function SettingsPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <User size={18} className="text-base-content/60" />
-                  <span className="text-base-content/70">Name:</span>
+                  <User size={18} className="opacity-60" />
+                  <span className="opacity-70">Name:</span>
                 </div>
                 <span className="font-semibold">{user.name || 'Not set'}</span>
               </div>
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Mail size={18} className="text-base-content/60" />
-                  <span className="text-base-content/70">Email:</span>
+                  <Mail size={18} className="opacity-60" />
+                  <span className="opacity-70">Email:</span>
                 </div>
                 <span className="font-semibold">{user.email}</span>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Google Calendar Integration */}
-        <div className="card bg-base-100 shadow-md">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="card bg-base-100 shadow-md"
+        >
           <div className="card-body">
             <h2 className="card-title flex items-center gap-2">
               <Calendar size={20} />
@@ -141,8 +152,10 @@ export default function SettingsPage() {
             <div className="divider mt-0"></div>
 
             {loading ? (
-              <div className="flex justify-center py-8">
-                <span className="loading loading-spinner loading-md"></span>
+              <div className="space-y-4">
+                <div className="h-20 bg-base-300 rounded animate-pulse"></div>
+                <div className="h-4 bg-base-300 rounded w-3/4 animate-pulse"></div>
+                <div className="h-10 bg-base-300 rounded w-48 animate-pulse"></div>
               </div>
             ) : (
               <>
@@ -205,7 +218,7 @@ export default function SettingsPage() {
                       Connect Google Calendar
                     </button>
 
-                    <div className="text-sm text-base-content/60">
+                    <div className="text-sm opacity-60">
                       <strong>Note:</strong> You'll be redirected to Google to authorize calendar access.
                       We only request permission to create events and meetings.
                     </div>
@@ -214,10 +227,10 @@ export default function SettingsPage() {
               </>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Future Settings Sections */}
-        <div className="mt-6 text-center text-base-content/50 text-sm">
+        <div className="mt-6 text-center opacity-50 text-sm">
           More settings coming soon...
         </div>
       </div>

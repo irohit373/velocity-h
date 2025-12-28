@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { User, LayoutDashboard, Calendar, Settings, LogOut } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { User, LayoutDashboard, Briefcase, Calendar, Settings, LogOut } from 'lucide-react';
 
 export default function UserDropdown({ user }) {
   const router = useRouter();
@@ -30,14 +31,20 @@ export default function UserDropdown({ user }) {
         </div>
       </div>
       
-      <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-box z-50 mt-3 w-56 p-2 shadow-lg border border-base-300">
-        {/* User Info Section */}
-        <li className="menu-title px-3 py-2">
-          <div className="flex items-center gap-2">
-            <User size={16} className="opacity-70" />
-            <div className="flex flex-col">
-              <span className="font-semibold">{user.name || 'User'}</span>
-              <span className="text-xs font-normal opacity-70 truncate">{user.email}</span>
+      <motion.ul
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.15 }}
+        tabIndex={0}
+        className="menu dropdown-content bg-base-100 rounded-box z-50 mt-3 w-56 p-2 shadow border"
+      >
+        <li className="menu-title">
+          <div className="flex gap-2">
+            <User size={16} />
+            <div>
+              <div className="font-semibold">{user.name || 'User'}</div>
+              <div className="text-xs opacity-70">{user.email}</div>
             </div>
           </div>
         </li>
@@ -46,9 +53,15 @@ export default function UserDropdown({ user }) {
         
         {/* Menu Items */}
         <li>
-          <a onClick={() => router.push('/dashboard/recruitment')} className="gap-3">
+          <a onClick={() => router.push('/dashboard')} className="gap-3">
             <LayoutDashboard size={18} />
             <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a onClick={() => router.push('/dashboard/recruitment')} className="gap-3">
+            <Briefcase size={18} />
+            <span>Recruitment</span>
           </a>
         </li>
         <li>
@@ -72,7 +85,7 @@ export default function UserDropdown({ user }) {
             <span>Logout</span>
           </a>
         </li>
-      </ul>
+      </motion.ul>
     </div>
   );
 }
